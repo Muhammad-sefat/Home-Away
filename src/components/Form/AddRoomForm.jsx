@@ -69,13 +69,14 @@ const AddRoomForm = ({ dates, handleDate, handleSubmit }) => {
             <div className=" p-4 bg-white w-full  m-auto rounded-lg">
               <div className="file_upload px-5 py-3 relative border-4 border-dotted border-gray-300 rounded-lg">
                 <div className="flex flex-col w-max mx-auto text-center">
-                  <label>
+                  <label htmlFor="image">
                     <input
                       className="text-sm cursor-pointer w-36 hidden"
                       type="file"
                       name="image"
                       id="image"
                       accept="image/*"
+                      required
                     />
                     <div className="bg-rose-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-rose-500">
                       Upload Image

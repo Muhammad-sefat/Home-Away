@@ -1,10 +1,13 @@
 import { useState } from "react";
 import AddRoomForm from "../../../components/Form/AddRoomForm";
-import Utilites from "../../../components/Utilites";
 import useAuth from "../../../hooks/useAuth";
+import imageUpload from "../../../components/Utilites";
 
 const AddRoom = () => {
   const { user } = useAuth();
+
+  const [imagePreview, setImagePreview] = useState();
+  const [imageText, setImageText] = useState("Upload Image");
 
   const [dates, setDates] = useState({
     startDate: new Date(),
@@ -13,7 +16,6 @@ const AddRoom = () => {
   });
 
   const handleDate = (range) => {
-    console.log(range);
     setDates(range.selection);
   };
 
@@ -27,7 +29,7 @@ const AddRoom = () => {
     const from = dates.startDate;
     const price = form.price.value;
     const guest = form.total_guest.value;
-    const image = form.iamge?.files[0];
+    const image = form.image.files[0];
     const bedrooms = form.bedrooms.value;
     const bathrooms = form.bathrooms.value;
     const description = form.description.value;
@@ -37,23 +39,24 @@ const AddRoom = () => {
       email: user?.email,
     };
 
-    console.log(
-      title,
-      location,
-      category,
-      price,
-      guest,
-      bedrooms,
-      bathrooms,
-      description,
-      to,
-      from,
-      host
-    );
-
     try {
-      const image_url = await Utilites(image);
-      console.log(image_url);
+      const image_url = await imageUpload(image);
+
+      const roomData = {
+        title,
+        location,
+        category,
+        price,
+        guest,
+        bedrooms,
+        bathrooms,
+        description,
+        to,
+        from,
+        host,
+        image: image_url,
+      };
+      console.log(roomData);
     } catch (err) {
       console.log(err.message);
     }
