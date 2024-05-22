@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
@@ -9,7 +9,9 @@ const Login = () => {
   const { loading, signIn, signInWithGoogle, resetPassword, setLoading } =
     useAuth();
   const [email, setEmail] = useState("");
+  const location = useLocation();
   const navigate = useNavigate();
+  const from = location?.state || "/";
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -25,20 +27,20 @@ const Login = () => {
       console.log(result);
 
       toast.success("SignUp Successful");
-      navigate("/");
+      navigate(from);
     } catch (err) {
       toast(err.message);
     }
   };
 
   const passwordReset = async () => {
-    if (!email) return toast("Please Provide Your Email");
+    if (!email) return toast.error("Please Provide Your Email");
     try {
       await resetPassword(email);
-      toast("Request Success.Check Your Email");
+      toast.success("Request Success.Check Your Email");
       setLoading(false);
     } catch (err) {
-      toast(err.message);
+      toast.error(err.message);
       setLoading(false);
     }
   };
@@ -48,9 +50,9 @@ const Login = () => {
       const result = await signInWithGoogle();
       console.log(result);
       toast.success("SignUp Successful");
-      navigate("/");
+      navigate(from);
     } catch (err) {
-      toast(err.message);
+      toast.error(err.message);
     }
   };
   return (
@@ -72,6 +74,7 @@ const Login = () => {
                 Email address
               </label>
               <input
+                onBlur={(e) => setEmail(e.target.value)}
                 type="email"
                 name="email"
                 id="email"
@@ -115,7 +118,7 @@ const Login = () => {
         </form>
         <div className="space-y-1">
           <button
-            onClick={resetPassword}
+            onClick={passwordReset}
             className="text-xs hover:underline hover:text-rose-500 text-gray-400"
           >
             Forgot password?
