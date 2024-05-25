@@ -1,10 +1,31 @@
 import { Helmet } from "react-helmet-async";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { useQuery } from "@tanstack/react-query";
+import useAuth from "../../../hooks/useAuth";
+import RoomDataRow from "../../../components/Form/RoomDataRow";
 
 const MyListings = () => {
+  const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
+  const {
+    data: rooms = [],
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ["my-listings", user?.email],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get(`/my-listings/${user?.email}`);
+      return data;
+    },
+  });
+
+  if (isLoading) {
+    return <span className="loading loading-spinner loading-lg"></span>;
+  }
   return (
     <>
       <Helmet>
-        <title>My Listings</title>
+        <title>My Listings || Dashboard</title>
       </Helmet>
 
       <div className="container mx-auto px-4 sm:px-8">
@@ -58,7 +79,15 @@ const MyListings = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody>{/* Room row data */}</tbody>
+                <tbody>
+                  {rooms.map((room) => (
+                    <RoomDataRow
+                      key={room._id}
+                      room={room}
+                      refetch={refetch}
+                    ></RoomDataRow>
+                  ))}
+                </tbody>
               </table>
             </div>
           </div>
