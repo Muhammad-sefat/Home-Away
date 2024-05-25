@@ -2,9 +2,14 @@ import { useState } from "react";
 import AddRoomForm from "../../../components/Form/AddRoomForm";
 import useAuth from "../../../hooks/useAuth";
 import imageUpload from "../../../components/Utilites";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 
 const AddRoom = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [imagePreview, setImagePreview] = useState();
   const [imageText, setImageText] = useState("Upload Image");
@@ -57,18 +62,37 @@ const AddRoom = () => {
         image: image_url,
       };
       console.log(roomData);
+
+      const { data } = await axios.post(`http://localhost:8000/room`, roomData);
+      console.log(data);
+      toast.success("Add Room Successfully");
+      navigate("/Dashboard/my-listings");
     } catch (err) {
-      console.log(err.message);
+      toast.error(err.message);
     }
   };
+
+  const handleImage = (image) => {
+    setImagePreview(URL.createObjectURL(image));
+    setImageText(image.name);
+  };
   return (
-    <div className="p-8">
-      <AddRoomForm
-        dates={dates}
-        handleDate={handleDate}
-        handleSubmit={handleSubmit}
-      />
-    </div>
+    <>
+      <Helmet>
+        <title>Add Room || Dashboard</title>
+      </Helmet>
+      <div className="p-8">
+        <AddRoomForm
+          dates={dates}
+          handleDate={handleDate}
+          handleSubmit={handleSubmit}
+          setImagePreview={setImagePreview}
+          imagePreview={imagePreview}
+          handleImage={handleImage}
+          imageText={imageText}
+        />
+      </div>
+    </>
   );
 };
 
