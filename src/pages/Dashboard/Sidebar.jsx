@@ -14,12 +14,13 @@ import AdminMenu from "../Menu/AdminMenu";
 import HostMenu from "../Menu/HostMenu";
 import MenuItem from "./MenuItem";
 import ToggleBtn from "../../components/Shared/Button/ToggleBtn";
+import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 
 const Sidebar = () => {
   const { logOut } = useAuth();
   const [isActive, setActive] = useState(false);
-
-  const [role] = useRole();
+  const [role, isLoading] = useRole();
+  const [toggle, setToggle] = useState(true);
 
   // Sidebar Responsive Handler
   const handleToggle = () => {
@@ -27,9 +28,11 @@ const Sidebar = () => {
   };
 
   // handle button
-  const toggleHandler = (btn) => {
-    console.log(btn);
+  const toggleHandler = (event) => {
+    setToggle(event.target.checked);
   };
+
+  if (isLoading) return <LoadingSpinner></LoadingSpinner>;
   return (
     <>
       {/* Small Screen Navbar */}
@@ -80,7 +83,10 @@ const Sidebar = () => {
           {/* Nav Items */}
           <div className="flex flex-col justify-between flex-1 mt-6">
             {role === "host" && (
-              <ToggleBtn toggleHandler={toggleHandler}></ToggleBtn>
+              <ToggleBtn
+                toggleHandler={toggleHandler}
+                toggle={toggle}
+              ></ToggleBtn>
             )}
 
             {/*  Menu Items */}
@@ -93,7 +99,7 @@ const Sidebar = () => {
               ></MenuItem>
 
               {role === "guest" && <GuestMenu></GuestMenu>}
-              {role === "host" && <HostMenu></HostMenu>}
+              {role === "host" ? toggle ? <HostMenu /> : <GuestMenu /> : ""}
               {role === "admin" && <AdminMenu></AdminMenu>}
             </nav>
           </div>
